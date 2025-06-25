@@ -8,8 +8,8 @@ export default function Home() {
                 <button className="text-xl rounded-lg px-6 py-3 font-bold bg-primary-orange hover:bg-[#1A1A1A] hover:text-white transition-all ease-in-out duration-500">Shop Now</button>
             </div>
             <div id="main-right" className="w-full md:w-[45%]">
-                <div id="box" className="w-[40%] mt-[12%] ml-[10%] md:ml-[20%] rounded-md p-36 bg-primary-orange"></div>
-                <div id="box2" className="w-3/4 md:w-1/2 mt-[-65%] md:mt-[-35%] ml-[20%] md:ml-[30%] rounded-md p-0 bg-primary-dark flex justify-center items-center overflow-hidden">
+                <div id="box" className="w-[40%] mt-[12%] ml-[10%] lg:ml-[20%] rounded-md p-36 bg-primary-orange"></div>
+                <div id="box2" className="w-3/4 lg:w-1/2 mt-[-65%] lg:mt-[-35%] ml-[20%] lg:ml-[30%] rounded-md p-0 bg-primary-dark flex justify-center items-center overflow-hidden">
                     <img src="Images/hero.png" className="w-full h-full object-contain" alt="hero" />
                 </div>
             </div>
