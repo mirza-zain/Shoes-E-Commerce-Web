@@ -1,3 +1,4 @@
+import Product from "./components/Product";
 
 export default function Home() {
   return (
@@ -16,15 +17,8 @@ export default function Home() {
         </div>
         <div id="explore" className="m-[5%]">
             <h2 className="mt-5 font-kugile text-2xl md:text-4xl font-bold text-center">Explore Sneakers & Footware</h2>
-            <p id="tag" className="text-center mt-2 text-xl mb-[5%]">Designed for Movement. Made for You.</p>
-            <div id="products" className="flex justify-center items-center flex-wrap gap-2.5 p-2.5 bg-primary-light">
-                <div className="card w-64 bg-transparent border-2 border-primary-dark rounded-xl shadow-xl/20 shadow-black transition-shadow overflow-hidden text-start ">
-                    <img id="sneaker" src="Images/hero.png" className="w-full h-60 object-cover" alt="sneaker" />
-                    <h3 className="text-lg font-bold m-1">Nike Sneakers</h3>
-                    <p className="text-lg font-bold m-1">$120</p>
-                    <button className="text-lg font-bold capitalize px-3 py-2 m-1 bg-primary-orange text-primary-dark border border-primary-light rounded-lg cursor-pointer transition-colors hover:bg-priamry-dark hover:text-white">Add to cart</button>                
-               </div>
-            </div>
+            <p id="tag" className="text-center mt-2 text-xl mb-[5%]">Designed for Movement | Made for You.</p>
+            <Product />
         </div>
       </main>    
   );
