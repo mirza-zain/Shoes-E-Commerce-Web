@@ -1,5 +1,9 @@
+'use client'
+
 import Image from 'next/image';
 import React from 'react'
+import ProductView from './ProductView';
+import Link from 'next/link';
 
 export default function Product() {
 // Array of product data
@@ -19,9 +23,11 @@ const products = [
         {
             products.map((product, idx) => (
                 <div key={idx} className="card w-64 bg-transparent border-2 border-primary-dark rounded-xl shadow-xl/20 shadow-black transition-shadow overflow-hidden text-start ">
+                    <Link href={"/viewitem"}>
                     <Image id="sneaker" src={product.image} className="w-full h-60 object-cover" width={240} height={240} alt={product.name} />
                     <h3 className="text-lg font-bold m-1">{product.name}</h3>
                     <p className="text-lg font-bold m-1">{product.price}</p>
+                    </Link>
                     <button className="text-lg font-bold capitalize px-3 py-2 m-1 bg-primary-orange text-primary-dark border border-primary-light rounded-lg cursor-pointer transition-colors hover:bg-primary-dark hover:text-white">Add to cart</button>                
                 </div>
             ))
