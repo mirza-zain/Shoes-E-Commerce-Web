@@ -4,7 +4,7 @@ import React from 'react'
 export default function ProductView() {
   return (
     <div className='w-full flex flex-1 flex-col md:flex-row justify-between items-center'>
-        <div className='w-full md:w-1/2'>
+        <div className='w-full md:w-1/2 flex flex-col jusitfy-between items-start'>
             <Image className='p-5 object-cover' src={"/Images/prod2.png"} width={500} height={500} alt='' />
         </div>
         <div className='w-full md:w-1/2 flex flex-col justify-between items-start px-5 md:px-0'>
