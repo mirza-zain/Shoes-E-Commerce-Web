@@ -1,28 +1,52 @@
 'use client'
 
 import Image from 'next/image';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ProductView from './ProductView';
 import Link from 'next/link';
 
+
 export default function Product() {
 // Array of product data
-const products = [
-    { name: "Nike Sneakers", price: "$120", image: "/Images/prod1.png" },
-    { name: "Adidas Sneakers", price: "$140", image: "/Images/prod2.png" },
-    { name: "Puma Sneakers", price: "$100", image: "/Images/prod3.png" },
-    { name: "Reebok Sneakers", price: "$110", image: "/Images/prod3.png" },
-    { name: "Nike Sneakers", price: "$120", image: "/Images/prod1.png" },
-    { name: "Adidas Sneakers", price: "$140", image: "/Images/prod2.png" },
-    { name: "Puma Sneakers", price: "$100", image: "/Images/hero.png" },
-];
+interface ProductType {
+  id: number;
+  name: string;
+  price: string;
+  image: string;
+}
+
+const [products, setProducts] = useState<ProductType[] | null>(null);
+  const [loading, isLoading] = useState(true);
+  const [error, setError] = useState<unknown>(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try 
+      {
+        const response = await fetch("http://localhost:8000/models/admin.php");
+        const result = await response.json()
+
+        setProducts(result);
+      } 
+      catch(error) 
+      {
+        alert('Error Fetching Data: ' + error);
+        setError(error);
+      } 
+        finally {
+          isLoading(false);
+        }
+      };
+  
+      fetchProducts();
+    }, []);
 
 
     return (
     <div id="products" className="flex justify-center items-center flex-wrap gap-2.5 p-2.5 bg-primary-light">
-        {
-            products.map((product, idx) => (
-                <div key={idx} className="card w-64 bg-transparent border-2 border-primary-dark rounded-xl shadow-xl/20 shadow-black transition-shadow overflow-hidden text-start ">
+        {products &&
+            products.map((product) => (
+                <div key={product.id} className="card w-64 bg-transparent border-2 border-primary-dark rounded-xl shadow-xl/20 shadow-black transition-shadow overflow-hidden text-start ">
                     <Link href={"/viewitem"}>
                     <Image id="sneaker" src={product.image} className="w-full h-60 object-cover" width={240} height={240} alt={product.name} />
                     <h3 className="text-lg font-bold m-1">{product.name}</h3>

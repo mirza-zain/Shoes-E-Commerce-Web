@@ -1,15 +1,22 @@
 <?php
 
-    $servername = 'localhost';
+    header("Access-Control-Allow-Origin");
+    header("Content-Type: application/json; charset = UTF-8");
+    header("Access-Content-Allow-Methods: GET, PUT, DELETE, POST");
+    header("Access-Content-Allow-Headers: Content-Type, Allow-Content-Allow-Headers, Authorization, X-Requested-With");
+
+
+    $servername = '127.0.0.1';
     $username = 'shoes_user';
     $password = 'kachan786';
     $database = 'shoes_ecommerce';
 
-    $connect = new mysqli($servername, $username, $password, $database);
+    $connect = new PDO("mysql:host=$servername; dbname=$database", $username, $password);
+    $connect -> setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION)
 
-    if($connect -> connect_error)
+    if($connect -> connection_status)
     {
-        die('connection failed'. $connect -> connect_error);
+        echo json_encode('connection failed'. $connect -> connection_status);
     }
 
 ?>
