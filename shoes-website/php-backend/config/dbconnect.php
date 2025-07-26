@@ -12,11 +12,7 @@
     $database = 'shoes_ecommerce';
 
     $connect = new PDO("mysql:host=$servername; dbname=$database", $username, $password);
-    $connect -> setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION)
+    $connect -> setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    if($connect -> connection_status)
-    {
-        echo json_encode('connection failed'. $connect -> connection_status);
-    }
 
 ?>
