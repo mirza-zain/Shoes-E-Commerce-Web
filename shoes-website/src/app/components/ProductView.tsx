@@ -28,7 +28,7 @@ export default function ProductView() {
       } 
       catch(error) 
       {
-        alert('Error Fetching Data: ', error);
+        alert('Error Fetching Data: ' + error);
         setError(error);
       } 
         finally {
