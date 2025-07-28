@@ -1,7 +1,11 @@
 <?php 
+header("Access-Control-Allow-Origin: *");
+
+// For debugging, it's good to keep these
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
 
 include_once '../config/dbconnect.php';
 
