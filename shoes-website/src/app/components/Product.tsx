@@ -22,7 +22,7 @@ export default function Product() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/get_products.php");
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/get_products.php`);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -55,7 +55,7 @@ export default function Product() {
             <Link href={`/viewitem/${product.id}`}>
               {product.image_url && (
                 <Image
-                  src={`http://localhost:8000/${product.image_url}`}
+                  src={`${process.env.NEXT_PUBLIC_API_URL}/${product.image_url}`}
                   className="w-full h-60 object-cover"
                   width={240}
                   height={240}

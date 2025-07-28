@@ -28,7 +28,7 @@ export default function AdminPage() {
         if(image) formData.append('itemPic', image);
 
         try {
-            const response = await fetch('http://localhost:8000/api/post_products.php', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/post_products.php`, {
                 method: 'POST',
                 body: formData
             });
@@ -57,7 +57,7 @@ export default function AdminPage() {
 
     const handleUpdate = async (product: any) => {
         try {
-            const response = await fetch('http://localhost:8000/api/update_products.php', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/update_products.php`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ export default function AdminPage() {
     const handleDelete = async (id: number) => {
         if(confirm('Are you sure you want to delete this product?')) {
             try {
-                const response = await fetch('http://localhost:8000/api/delete_products.php', {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/delete_products.php`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -121,7 +121,7 @@ export default function AdminPage() {
 
     const getProducts = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/get_products.php');
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/get_products.php`);
             const text = await response.text();
             console.log('Get products response:', text);
             

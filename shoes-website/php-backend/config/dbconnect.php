@@ -6,10 +6,10 @@
     header("Access-Content-Allow-Headers: Content-Type, Allow-Content-Allow-Headers, Authorization, X-Requested-With");
 
 
-    $servername = '127.0.0.1';
-    $username = 'shoes_user';
-    $password = 'kachan786';
-    $database = 'shoes_ecommerce';
+    $servername = 'sql307.infinityfree.com';
+    $username = 'if0_39577041';
+    $password = 'Bakugo786';
+    $database = 'if0_39577041_shoesdb';
 
     $connect = new PDO("mysql:host=$servername; dbname=$database", $username, $password);
     $connect -> setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
