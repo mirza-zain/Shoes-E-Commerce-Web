@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import 'remixicon/fonts/remixicon.css';
-import Navbar from "./components/Navbar";
-import MaintenanceBanner from "./components/MaintenanceBanner";
-import { Footer } from "./components/Footer";
+import Navbar from "../components/Navbar";
+import { Footer } from "../components/Footer";
 
 
 export const metadata: Metadata = {
@@ -22,7 +21,6 @@ export default function RootLayout({
         className="antialiased min-h-screen flex flex-col items-center"
         suppressHydrationWarning={true}
       >
-        <MaintenanceBanner />
         <Navbar />
         <div className="flex-1">
           {children}

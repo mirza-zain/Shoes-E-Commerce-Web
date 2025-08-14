@@ -21,7 +21,7 @@ export default function ProductView() {
     const fetchProducts = async () => {
       try 
       {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/get_products.php`);
+        const response = await fetch("/api/products");
         const result = await response.json()
 
         setProducts(result);
