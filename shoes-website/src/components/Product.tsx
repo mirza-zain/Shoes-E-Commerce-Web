@@ -4,15 +4,20 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-export default function Product() {
+interface ProductProps {
+  category?: string; // Optional category filter
+}
+
+export default function Product({ category }: ProductProps) {
   interface ProductType {
-    id: number;
+    _id?: string;
+    id?: number;
     name: string;
     description: string;
-    price: string;
+    price: string | number;
     label: string;
-    stock: string;
-    image_url: string;
+    stock: string | number;
+    image_url?: string;
   }
 
   const [products, setProducts] = useState<ProductType[]>([]);
@@ -27,7 +32,36 @@ export default function Product() {
             throw new Error('Network response was not ok');
         }
         const result = await response.json();
-        setProducts(result);
+        
+        // Filter products based on category if provided
+        let filteredProducts = result;
+        if (category) {
+          filteredProducts = result.filter((product: ProductType) => {
+            const productLabel = product.label.toLowerCase();
+            const categoryFilter = category.toLowerCase();
+            
+            // Check if the product label matches the category
+            if (categoryFilter === 'men' || categoryFilter === 'male') {
+              return productLabel.includes('men') || 
+                     productLabel.includes('male') || 
+                     productLabel.includes('man') ||
+                     productLabel === 'men' ||
+                     productLabel === 'male';
+            }
+            
+            if (categoryFilter === 'women' || categoryFilter === 'female') {
+              return productLabel.includes('women') || 
+                     productLabel.includes('female') || 
+                     productLabel.includes('woman') ||
+                     productLabel === 'women' ||
+                     productLabel === 'female';
+            }
+            
+            return productLabel.includes(categoryFilter);
+          });
+        }
+        
+        setProducts(filteredProducts);
       } catch (error) {
         console.error('Error Fetching Data:', error);
         setError('Failed to fetch products');
@@ -37,7 +71,7 @@ export default function Product() {
     };
 
     fetchProducts();
-  }, []);
+  }, [category]); // Add category as dependency
 
   if (loading) {
     return <p className="text-center p-10">Loading products...</p>;
@@ -51,11 +85,11 @@ export default function Product() {
     <div id="products" className="flex justify-center items-center flex-wrap gap-2.5 p-2.5 bg-primary-light">
       {products && products.length > 0 ? (
         products.map((product) => (
-          <div key={product.id} className="card w-64 bg-transparent border-2 border-primary-dark rounded-xl shadow-xl/20 shadow-black transition-shadow overflow-hidden text-start">
-            <Link href={`/viewitem/${product.id}`}>
+          <div key={product._id || product.id} className="card w-64 bg-transparent border-2 border-primary-dark rounded-xl shadow-xl/20 shadow-black transition-shadow overflow-hidden text-start">
+            <Link href={`/viewitem/${product._id || product.id}`}>
               {product.image_url && (
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_API_URL}/${product.image_url}`}
+                  src={product.image_url}
                   className="w-full h-60 object-cover"
                   width={240}
                   height={240}
@@ -72,7 +106,14 @@ export default function Product() {
           </div>
         ))
       ) : (
-        <p>No products found.</p>
+        <div className="text-center p-10">
+          <p className="text-lg text-gray-600">
+            {category ? `No ${category} products found.` : 'No products found.'}
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            {category ? `Try adding some ${category} products in the admin panel.` : 'Try adding some products in the admin panel.'}
+          </p>
+        </div>
       )}
     </div>
   );

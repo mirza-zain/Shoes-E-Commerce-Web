@@ -12,7 +12,7 @@ const currentYear = new Date().getFullYear();
 const copyrightText = `© ${currentYear} Random Fashion. All rights reserved.`;
 
 return (
-    <footer className='w-full h-1/4 flex flex-col justify-centeritems-center py-5 border-t-2'>
+    <footer className='w-full h-1/4 flex flex-col justify-center items-center py-5 border-t-2'>
         <div id="foot-top" className='flex flex-col md:flex-row justify-around items-center'>
             <div id="foot-left">
                 <h2 className='font-firlest text-3xl md:text-5xl font-bold text-center md:text-start'>Random Fashion</h2>
