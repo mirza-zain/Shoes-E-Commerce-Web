@@ -1,11 +1,24 @@
 import { v2 as cloudinary } from 'cloudinary';
 
 // Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+if (process.env.CLOUDINARY_URL) {
+  // Parse CLOUDINARY_URL manually for explicit configuration
+  const url = new URL(process.env.CLOUDINARY_URL);
+  cloudinary.config({
+    cloud_name: url.hostname,
+    api_key: url.username,
+    api_secret: url.password,
+    secure: true
+  });
+} else {
+  // Fallback to individual environment variables
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true
+  });
+}
 
 export async function uploadToCloudinary(fileBuffer: Buffer, fileName: string): Promise<string> {
   return new Promise((resolve, reject) => {
