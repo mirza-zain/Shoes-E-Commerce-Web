@@ -50,7 +50,8 @@ export async function POST(request: Request) {
     
     try {
       // Check if we have a valid Vercel Blob token
-      if (process.env.BLOB_READ_WRITE_TOKEN && process.env.BLOB_READ_WRITE_TOKEN.length > 20) {
+      const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+      if (blobToken && blobToken.length > 10 && !blobToken.includes('commented')) {
         console.log('Uploading to Vercel Blob...');
         const blob = await put(imageFile.name, imageFile, { access: 'public' });
         imageUrl = blob.url;
@@ -60,9 +61,18 @@ export async function POST(request: Request) {
         throw new Error('Using local storage fallback');
       }
     } catch (uploadError) {
-      console.log('Using local storage fallback due to:', uploadError);
+      console.log('Vercel Blob upload failed, using local storage fallback:', uploadError);
       
-      // Fallback: Save to public/uploads directory
+      // For production deployment without local file system access,
+      // we need to use a different approach
+      if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+        // In production without Vercel Blob, we can't save files locally
+        return NextResponse.json({ 
+          error: 'Image upload configuration required for production. Please configure BLOB_READ_WRITE_TOKEN in your environment variables.' 
+        }, { status: 500 });
+      }
+      
+      // Fallback: Save to public/uploads directory (development only)
       const bytes = await imageFile.arrayBuffer();
       const buffer = Buffer.from(bytes);
       

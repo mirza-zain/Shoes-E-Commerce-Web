@@ -2,12 +2,14 @@
 
 import { useEffect, useState, FormEvent } from "react";
 import { Product } from "@/types";
+import EditModal from "@/components/EditModal";
 
 export default function AdminPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const fetchProducts = async () => {
         try {
@@ -28,10 +30,15 @@ export default function AdminPage() {
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (isSubmitting) return; // Prevent double submission
+        
+        setIsSubmitting(true);
         const formData = new FormData(e.currentTarget);
         
         try {
             console.log('Submitting form...');
+            console.log('Environment:', process.env.NODE_ENV);
+            
             const response = await fetch('/api/products', { 
                 method: 'POST', 
                 body: formData 
@@ -55,6 +62,8 @@ export default function AdminPage() {
             console.error('Submit error:', err);
             const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
             alert(`Failed to add product: ${errorMessage}`);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -67,6 +76,47 @@ export default function AdminPage() {
         } catch (err) {
             alert(err instanceof Error ? err.message : 'An unknown error occurred');
         }
+    };
+
+    const handleEdit = (product: Product) => {
+        setEditingProduct(product);
+    };
+
+    const handleSaveEdit = async (updatedProduct: Product) => {
+        try {
+            console.log('Updating product:', updatedProduct);
+            
+            const response = await fetch(`/api/products/${updatedProduct._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedProduct),
+            });
+
+            console.log('Update response status:', response.status);
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Update error response:', errorData);
+                throw new Error(errorData.error || 'Failed to update product');
+            }
+
+            const result = await response.json();
+            console.log('Update successful:', result);
+
+            await fetchProducts(); // Refresh list
+            setEditingProduct(null); // Close modal
+            alert('Product updated successfully!');
+        } catch (err) {
+            console.error('Update error:', err);
+            const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+            alert(`Failed to update product: ${errorMessage}`);
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setEditingProduct(null);
     };
     
     if (isLoading) return <p>Loading...</p>;
@@ -84,7 +134,9 @@ export default function AdminPage() {
                 <input type="text" name="label" className='p-2 border rounded' placeholder="Label" required />
                 <input type="number" name="stock" className='p-2 border rounded' placeholder="Stock" required />
                 <input type="file" name="image" className='p-2 border rounded' accept="image/*" title="image" required />
-                <button type="submit" className='bg-primary-orange text-white rounded-md py-2.5 font-extrabold'>Add Product</button>
+                <button type="submit" disabled={isSubmitting} className={`${isSubmitting ? 'bg-gray-400' : 'bg-primary-orange'} text-white rounded-md py-2.5 font-extrabold`}>
+                    {isSubmitting ? 'Adding Product...' : 'Add Product'}
+                </button>
             </form>
             
             <table className='w-full border-collapse mt-4'>
@@ -103,13 +155,21 @@ export default function AdminPage() {
                             <td className="py-2 px-2 border">${product.price}</td>
                             <td className="py-2 px-2 border">{product.stock}</td>
                             <td className="py-2 px-2 border">
-                                <button onClick={() => alert('Edit functionality to be added!')} className="bg-blue-500 text-white px-2 py-1 rounded mr-2">Edit</button>
+                                <button onClick={() => handleEdit(product)} className="bg-blue-500 text-white px-2 py-1 rounded mr-2">Edit</button>
                                 <button onClick={() => handleDelete(product._id)} className="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
+            
+            {editingProduct && (
+                <EditModal
+                    product={editingProduct}
+                    onSave={handleSaveEdit}
+                    onCancel={handleCancelEdit}
+                />
+            )}
         </div>
     );
 }
