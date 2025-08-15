@@ -10,7 +10,6 @@ export default function AdminPage() {
     const [error, setError] = useState<string | null>(null);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const fetchProducts = async () => {
         try {
