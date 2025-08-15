@@ -87,7 +87,7 @@ export default function Product({ category }: ProductProps) {
         products.map((product) => (
           <div key={product._id || product.id} className="card w-64 bg-transparent border-2 border-primary-dark rounded-xl shadow-xl/20 shadow-black transition-shadow overflow-hidden text-start">
             <Link href={`/viewitem/${product._id || product.id}`}>
-              {product.image_url && (
+              {product.image_url ? (
                 <Image
                   src={product.image_url}
                   className="w-full h-60 object-cover"
@@ -95,7 +95,16 @@ export default function Product({ category }: ProductProps) {
                   height={240}
                   alt={product.name}
                   priority
+                  onError={(e) => {
+                    console.log('Image failed to load:', product.image_url);
+                    // Fallback to a placeholder or hide the image
+                    e.currentTarget.style.display = 'none';
+                  }}
                 />
+              ) : (
+                <div className="w-full h-60 bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-500">No Image</span>
+                </div>
               )}
               <h3 className="text-lg font-bold m-1">{product.name}</h3>
               <p className="text-lg font-bold m-1">${product.price}</p>
