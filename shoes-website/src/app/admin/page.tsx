@@ -10,6 +10,7 @@ export default function AdminPage() {
     const [error, setError] = useState<string | null>(null);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const fetchProducts = async () => {
         try {
@@ -133,8 +134,8 @@ export default function AdminPage() {
                 <input type="number" name="price" step="0.01" className='p-2 border rounded' placeholder="Price" required />
                 <input type="text" name="label" className='p-2 border rounded' placeholder="Label" required />
                 <input type="number" name="stock" className='p-2 border rounded' placeholder="Stock" required />
-                <input type="file" name="image" className='p-2 border rounded' accept="image/*" title="image" />
-                <p className="text-sm text-gray-500">Image is optional. A placeholder will be used if no image is provided.</p>
+                <input type="file" name="image" className='p-2 border rounded' accept="image/*" title="image" required />
+                <p className="text-sm text-gray-500">Please select an image for the product.</p>
                 <button type="submit" disabled={isSubmitting} className={`${isSubmitting ? 'bg-gray-400' : 'bg-primary-orange'} text-white rounded-md py-2.5 font-extrabold`}>
                     {isSubmitting ? 'Adding Product...' : 'Add Product'}
                 </button>

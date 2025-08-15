@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { put } from '@vercel/blob';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 import { Product } from '@/types';
 
 // GET all products
@@ -39,29 +40,80 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
-    let imageUrl: string = '';
-
     if (!imageFile) {
-      console.log('No image file provided, proceeding without image');
-      imageUrl = '/Images/placeholder.png'; // Default placeholder image
-    } else {
-      console.log('Processing image upload...');
+      console.log('Missing image file');
+      return NextResponse.json({ error: 'Image file is required.' }, { status: 400 });
+    }
+
+    console.log('Processing image upload...');
+    
+    let imageUrl: string;
+    const imageBytes = await imageFile.arrayBuffer();
+    const imageBuffer = Buffer.from(imageBytes);
+    
+    try {
+      // First try Vercel Blob
+      const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+      console.log('Blob token available:', !!blobToken, 'Length:', blobToken?.length);
+      
+      if (blobToken && blobToken.length > 10 && blobToken !== 'YOUR_NEW_TOKEN_HERE') {
+        console.log('Uploading to Vercel Blob...');
+        
+        const timestamp = Date.now();
+        const extension = imageFile.name.split('.').pop() || 'jpg';
+        const filename = `${timestamp}-${Math.random().toString(36).substring(2)}.${extension}`;
+        
+        const blob = await put(filename, imageFile, { access: 'public' });
+        imageUrl = blob.url;
+        console.log('✅ Image uploaded to Vercel Blob successfully:', imageUrl);
+      } else {
+        throw new Error('Vercel Blob token not configured');
+      }
+    } catch (blobError) {
+      console.log('Vercel Blob upload failed, trying Cloudinary...', blobError);
       
       try {
-        // Check if we have a valid Vercel Blob token
-        const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
-        if (blobToken && blobToken.length > 10 && !blobToken.includes('commented')) {
-          console.log('Uploading to Vercel Blob...');
-          const blob = await put(imageFile.name, imageFile, { access: 'public' });
-          imageUrl = blob.url;
-          console.log('Image uploaded to Vercel Blob successfully:', imageUrl);
-        } else {
-          console.log('No valid Vercel Blob token found, using placeholder...');
-          imageUrl = '/Images/placeholder.png';
+        // Fallback to Cloudinary
+        imageUrl = await uploadToCloudinary(imageBuffer, imageFile.name);
+        console.log('✅ Image uploaded to Cloudinary successfully:', imageUrl);
+      } catch (cloudinaryError) {
+        console.error('Cloudinary upload also failed:', cloudinaryError);
+        
+        // For production, if both cloud services fail, we can't proceed
+        if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+          return NextResponse.json({ 
+            error: 'Image upload failed. Please check your image hosting configuration.',
+            details: 'Both Vercel Blob and Cloudinary failed'
+          }, { status: 500 });
         }
-      } catch (uploadError) {
-        console.log('Vercel Blob upload failed, using placeholder:', uploadError);
-        imageUrl = '/Images/placeholder.png';
+        
+        // Final fallback for development: local storage
+        try {
+          const timestamp = Date.now();
+          const extension = imageFile.name.split('.').pop();
+          const filename = `${timestamp}-${Math.random().toString(36).substring(2)}.${extension}`;
+          
+          const fs = require('fs').promises;
+          const path = require('path');
+          const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+          
+          try {
+            await fs.access(uploadDir);
+          } catch {
+            await fs.mkdir(uploadDir, { recursive: true });
+          }
+          
+          const filePath = path.join(uploadDir, filename);
+          await fs.writeFile(filePath, imageBuffer);
+          
+          imageUrl = `/uploads/${filename}`;
+          console.log('✅ Image saved locally:', imageUrl);
+        } catch (localError) {
+          console.error('All upload methods failed:', localError);
+          return NextResponse.json({ 
+            error: 'Image upload failed on all platforms.' 
+          }, { status: 500 });
+        }
       }
     }
 
