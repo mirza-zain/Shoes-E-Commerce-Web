@@ -36,29 +36,61 @@ export default function Product({ category }: ProductProps) {
         // Filter products based on category if provided
         let filteredProducts = result;
         if (category) {
+          console.log('Filtering for category:', category);
+          console.log('All products:', result.map((p: ProductType) => ({ name: p.name, label: p.label })));
+          
           filteredProducts = result.filter((product: ProductType) => {
-            const productLabel = product.label.toLowerCase();
-            const categoryFilter = category.toLowerCase();
+            const productLabel = product.label.toLowerCase().trim();
+            const categoryFilter = category.toLowerCase().trim();
             
-            // Check if the product label matches the category
+            console.log(`Checking product "${product.name}" with label "${productLabel}" against category "${categoryFilter}"`);
+            
+            // More precise matching to avoid conflicts
             if (categoryFilter === 'men' || categoryFilter === 'male') {
-              return productLabel.includes('men') || 
-                     productLabel.includes('male') || 
-                     productLabel.includes('man') ||
-                     productLabel === 'men' ||
-                     productLabel === 'male';
+              // Check for exact matches or patterns that clearly indicate men's products
+              const isMenProduct = productLabel === 'men' || 
+                                   productLabel === 'male' ||
+                                   productLabel === 'man' ||
+                                   productLabel.startsWith('men') ||
+                                   productLabel.startsWith('male') ||
+                                   productLabel.startsWith('man') ||
+                                   productLabel.endsWith('men') ||
+                                   productLabel.endsWith('male') ||
+                                   productLabel.endsWith('man') ||
+                                   (productLabel.includes('men') && !productLabel.includes('women')) ||
+                                   (productLabel.includes('male') && !productLabel.includes('female')) ||
+                                   (productLabel.includes('man') && !productLabel.includes('woman'));
+              
+              console.log(`Is men's product: ${isMenProduct}`);
+              return isMenProduct;
             }
             
             if (categoryFilter === 'women' || categoryFilter === 'female') {
-              return productLabel.includes('women') || 
-                     productLabel.includes('female') || 
-                     productLabel.includes('woman') ||
-                     productLabel === 'women' ||
-                     productLabel === 'female';
+              // Check for women's products
+              const isWomenProduct = productLabel === 'women' || 
+                                     productLabel === 'female' ||
+                                     productLabel === 'woman' ||
+                                     productLabel.startsWith('women') ||
+                                     productLabel.startsWith('female') ||
+                                     productLabel.startsWith('woman') ||
+                                     productLabel.endsWith('women') ||
+                                     productLabel.endsWith('female') ||
+                                     productLabel.endsWith('woman') ||
+                                     productLabel.includes('women') ||
+                                     productLabel.includes('female') ||
+                                     productLabel.includes('woman');
+              
+              console.log(`Is women's product: ${isWomenProduct}`);
+              return isWomenProduct;
             }
             
-            return productLabel.includes(categoryFilter);
+            // For other categories, use simple includes
+            const matches = productLabel.includes(categoryFilter);
+            console.log(`General category match: ${matches}`);
+            return matches;
           });
+          
+          console.log('Filtered products:', filteredProducts.map((p: ProductType) => ({ name: p.name, label: p.label })));
         }
         
         setProducts(filteredProducts);
