@@ -51,10 +51,10 @@ export default function Product({ category }: ProductProps) {
             
             if (categoryFilter === 'women' || categoryFilter === 'female') {
               return productLabel.includes('women') || 
-                     productLabel.includes('female') || 
+                     productLabel.includes('girl') || 
                      productLabel.includes('woman') ||
                      productLabel === 'women' ||
-                     productLabel === 'female';
+                     productLabel === 'girl';
             }
             
             return productLabel.includes(categoryFilter);
